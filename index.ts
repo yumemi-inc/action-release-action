@@ -98,8 +98,9 @@ const getInputRequired = (name: string) =>
 	await group('Committing changes', async () => {
 		await exec('git', ['add', '.'], runInDist);
 		await exec('git', ['commit', '-m', `feat: Release ${version}`], runInDist);
-		await exec('git', ['tag', `v${versionInfo.major}`], runInDist);
-		await exec('git', ['push', '--tags', 'origin', releaseBranch], runInDist);
+		await exec('git', ['tag', '-f', `v${versionInfo.major}`], runInDist);
+		await exec('git', ['push'], runInDist);
+		await exec('git', ['push', '--tags', '-f'], runInDist);
 	});
 
 	await group('Creating a release', async () => {
