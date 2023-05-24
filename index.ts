@@ -86,7 +86,7 @@ const getInputRequired = (name: string) =>
     await exec(
       'git',
       ['pull', '--set-upstream', '--rebase', 'origin', releaseBranch],
-      runInDist,
+      { ...runInDist, ignoreReturnCode: true },
     );
   });
 
