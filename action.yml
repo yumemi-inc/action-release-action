@@ -1,0 +1,29 @@
+name: Reject Self Approval Action
+description: Reject self approved deployments.
+author: YUMEMI Inc.
+branding:
+  icon: alert-triangle
+  color: yellow
+runs:
+  using: node16
+  main: 'index.js'
+inputs:
+  version:
+    required: true
+    description: Version name of the new release.
+  release-branch:
+    required: true
+    description: Branch name to place built artifacts on.
+    default: release
+  build-command:
+    required: true
+    description: 'Command(s) to run for building .js file.'
+    default: 'pnpm i && pnpm build'
+  directory:
+    required: true
+    description: 'Where the build command generates the artifacts to release.'
+    default: 'dist'
+  token:
+    required: true
+    description: GitHub token with contents:write access.
+    default: '${{ github.token }}'
