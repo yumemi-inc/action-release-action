@@ -1,9 +1,9 @@
-name: Reject Self Approval Action
-description: Reject self approved deployments.
+name: Action Release Action
+description: Release TypeScript action with prebuilt bundle.
 author: YUMEMI Inc.
 branding:
-  icon: alert-triangle
-  color: yellow
+  icon: tag
+  color: green
 runs:
   using: node16
   main: 'index.js'
