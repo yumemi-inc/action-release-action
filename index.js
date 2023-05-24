@@ -11297,7 +11297,7 @@ var getInputRequired = (name) => (0, import_core.getInput)(name, {
     await (0, import_exec.exec)(
       "git",
       ["pull", "--set-upstream", "--rebase", "origin", releaseBranch],
-      runInDist
+      { ...runInDist, ignoreReturnCode: true }
     );
   });
   await (0, import_core.group)("Running build commands", async () => {
