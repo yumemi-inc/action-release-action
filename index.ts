@@ -84,7 +84,7 @@ const getInputRequired = (name: string) =>
 			runInDist,
 		);
 
-		await exec('git', ['pull', '--set-upstream', 'origin']);
+		await exec('git', ['pull', '--set-upstream', 'origin', releaseBranch]);
 	});
 
 	await group('Running build commands', async () => {
@@ -99,7 +99,7 @@ const getInputRequired = (name: string) =>
 		await exec('git', ['add', '.'], runInDist);
 		await exec('git', ['commit', '-m', `feat: Release ${version}`], runInDist);
 		await exec('git', ['tag', '-f', `v${versionInfo.major}`], runInDist);
-		await exec('git', ['push'], runInDist);
+		await exec('git', ['push', '-u', 'origin', releaseBranch], runInDist);
 		await exec('git', ['push', '--tags', '-f'], runInDist);
 	});
 
