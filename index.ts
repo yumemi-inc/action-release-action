@@ -1,4 +1,4 @@
-import { cp } from 'node:fs/promises';
+import { cp, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { cwd, exit } from 'node:process';
 
@@ -72,6 +72,10 @@ const getInputRequired = (name: string) =>
 			`url.${gitUrl.toString()}.insteadOf`,
 			repository.clone_url,
 		]);
+
+		await mkdir(directory, {
+			recursive: true,
+		});
 
 		await exec('git', ['init', '-b', releaseBranch], runInDist);
 		await exec(
