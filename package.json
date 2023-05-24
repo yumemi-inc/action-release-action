@@ -1,0 +1,25 @@
+{
+  "name": "@yumemi-inc/action-release-action",
+  "description": "Release TypeScript action with prebuilt bundle.",
+  "author": "Natsuki Ikeguchi <n_ikeguchi@yumemi.co.jp>",
+  "license": "MIT",
+  "readme": "README.md",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild index.ts --bundle --platform=node --outfile=dist/index.js",
+    "check": "rome format . && rome check .",
+    "fix": "rome format --write . && rome check --apply-unsafe ."
+  },
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/exec": "^1.1.1",
+    "@actions/github": "^5.1.1",
+    "@octokit/rest": "^19.0.11"
+  },
+  "devDependencies": {
+    "@types/node": "^20.2.3",
+    "esbuild": "^0.17.19",
+    "rome": "^12.1.2",
+    "typescript": "^5.0.4"
+  }
+}
