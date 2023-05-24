@@ -84,7 +84,13 @@ const getInputRequired = (name: string) =>
 			runInDist,
 		);
 
-		await exec('git', ['pull', '--set-upstream', 'origin', releaseBranch]);
+		await exec('git', [
+			'pull',
+			'--set-upstream',
+			'--rebase',
+			'origin',
+			releaseBranch,
+		]);
 	});
 
 	await group('Running build commands', async () => {
