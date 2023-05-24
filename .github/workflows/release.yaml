@@ -23,6 +23,6 @@ jobs:
 
       - run: corepack enable pnpm
 
-      - uses: './dist'
+      - uses: yumemi-inc/action-release-action@v1
         with:
           version: '${{ inputs.version }}'
