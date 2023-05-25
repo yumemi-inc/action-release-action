@@ -91,9 +91,9 @@ const getInputRequired = (name: string) =>
   });
 
   await group('Running build commands', async () => {
-    await Promise.all(
-      buildCommand.map(async (command) => await exec('sh', ['-c', command])),
-    );
+    for (const command of buildCommand) {
+      await exec('sh', ['-c', command]);
+    }
 
     await cp('action.yml', resolve(directory, 'action.yml'));
   });
