@@ -11301,9 +11301,9 @@ var getInputRequired = (name) => (0, import_core.getInput)(name, {
     );
   });
   await (0, import_core.group)("Running build commands", async () => {
-    await Promise.all(
-      buildCommand.map(async (command) => await (0, import_exec.exec)("sh", ["-c", command]))
-    );
+    for (const command of buildCommand) {
+      await (0, import_exec.exec)("sh", ["-c", command]);
+    }
     await (0, import_promises.cp)("action.yml", (0, import_node_path.resolve)(directory, "action.yml"));
   });
   await (0, import_core.group)("Committing changes", async () => {
