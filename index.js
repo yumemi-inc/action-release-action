@@ -11314,12 +11314,21 @@ var getInputRequired = (name) => (0, import_core.getInput)(name, {
     await (0, import_exec.exec)("git", ["push", "--tags", "-f"], runInDist);
   });
   await (0, import_core.group)("Creating a release", async () => {
+    const latestRelease = await octokit.repos.getLatestRelease({
+      ...import_github.context.repo
+    });
+    const releaseNotes = await octokit.repos.generateReleaseNotes({
+      ...import_github.context.repo,
+      tag_name: version2,
+      target_commitish: import_github.context.sha,
+      previous_tag_name: latestRelease.data.tag_name
+    });
     await octokit.repos.createRelease({
       ...import_github.context.repo,
       name: version2,
       tag_name: version2,
       target_commitish: releaseBranch,
-      generate_release_notes: true
+      body: releaseNotes.data.body
     });
   });
 })().then().catch((e) => {
