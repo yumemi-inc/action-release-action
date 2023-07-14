@@ -11,7 +11,7 @@ Release TypeScript action with prebuilt bundle.
 See [.github/workflows/release.yaml](.github/workflows/release.yaml) for example workflow.
 
 ```yaml
-- uses: yumemi-inc/action-release-action@v1
+- uses: yumemi-inc/action-release-action@v2
   with:
     version: '${{ inputs.version }}'
 ```
