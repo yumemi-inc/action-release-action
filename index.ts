@@ -22,6 +22,7 @@ const getInputRequired = (name: string) =>
 (async () => {
   const version = getInputRequired('version');
   const preRelease = getBooleanInput('pre-release');
+  const disableSourceTag = getBooleanInput('disable-source-tag');
   const releaseBranch = getInputRequired('release-branch');
   const buildCommand = getMultilineInput('build-command', { required: true });
   const directory = getInputRequired('directory');
@@ -48,7 +49,7 @@ const getInputRequired = (name: string) =>
   const repository = (await octokit.repos.get({ ...context.repo })).data;
   const runInDist = { cwd: resolve(cwd(), directory) };
 
-  await group('Initialising release branch', async () => {
+  await group('Initialising Git', async () => {
     await exec('git', [
       'config',
       '--global',
@@ -73,7 +74,18 @@ const getInputRequired = (name: string) =>
       `url.${gitUrl.toString()}.insteadOf`,
       repository.clone_url,
     ]);
+  });
 
+  await group('Creating source tag', async () => {
+    if (disableSourceTag) {
+      console.log('Disabled, skipping.');
+    } else {
+      await exec('git', ['tag', `${version}-src`], runInDist);
+      await exec('git', ['push', '--tags']);
+    }
+  });
+
+  await group('Initialising release branch', async () => {
     await mkdir(directory, {
       recursive: true,
     });
@@ -113,12 +125,17 @@ const getInputRequired = (name: string) =>
       ...context.repo,
     });
 
-    const releaseNotes = await octokit.repos.generateReleaseNotes({
-      ...context.repo,
-      tag_name: version,
-      target_commitish: context.sha,
-      previous_tag_name: latestRelease.data.tag_name,
-    });
+    let body = null;
+    if (!disableSourceTag) {
+      const releaseNotes = await octokit.repos.generateReleaseNotes({
+        ...context.repo,
+        tag_name: version,
+        target_commitish: context.sha,
+        previous_tag_name: `${latestRelease.data.tag_name}-src`,
+      });
+
+      body = releaseNotes.data.body;
+    }
 
     await octokit.repos.createRelease({
       ...context.repo,
@@ -126,7 +143,7 @@ const getInputRequired = (name: string) =>
       tag_name: version,
       target_commitish: releaseBranch,
       prerelease: preRelease,
-      body: releaseNotes.data.body,
+      body,
     });
   });
 })()

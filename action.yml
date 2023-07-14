@@ -15,6 +15,10 @@ inputs:
     required: true
     description: Create a pre-release instead.
     default: 'false'
+  disable-source-tag:
+    required: true
+    description: Disable creating a source tag for generating release notes.
+    default: 'false'
   release-branch:
     required: true
     description: Branch name to place built artifacts on.
