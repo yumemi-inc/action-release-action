@@ -107,12 +107,23 @@ const getInputRequired = (name: string) =>
   });
 
   await group('Creating a release', async () => {
+    const latestRelease = await octokit.repos.getLatestRelease({
+      ...context.repo,
+    });
+
+    const releaseNotes = await octokit.repos.generateReleaseNotes({
+      ...context.repo,
+      tag_name: version,
+      target_commitish: context.sha,
+      previous_tag_name: latestRelease.data.tag_name,
+    });
+
     await octokit.repos.createRelease({
       ...context.repo,
       name: version,
       tag_name: version,
       target_commitish: releaseBranch,
-      generate_release_notes: true,
+      body: releaseNotes.data.body,
     });
   });
 })()
