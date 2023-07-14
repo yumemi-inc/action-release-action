@@ -2092,7 +2092,7 @@ var require_core = __commonJS({
       return inputs.map((input) => input.trim());
     }
     exports.getMultilineInput = getMultilineInput2;
-    function getBooleanInput(name, options) {
+    function getBooleanInput2(name, options) {
       const trueValue = ["true", "True", "TRUE"];
       const falseValue = ["false", "False", "FALSE"];
       const val = getInput2(name, options);
@@ -2103,7 +2103,7 @@ var require_core = __commonJS({
       throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
-    exports.getBooleanInput = getBooleanInput;
+    exports.getBooleanInput = getBooleanInput2;
     function setOutput(name, value) {
       const filePath = process.env["GITHUB_OUTPUT"] || "";
       if (filePath) {
@@ -11246,6 +11246,8 @@ var getInputRequired = (name) => (0, import_core.getInput)(name, {
 });
 (async () => {
   const version2 = getInputRequired("version");
+  const preRelease = (0, import_core.getBooleanInput)("pre-release");
+  const disableSourceTag = (0, import_core.getBooleanInput)("disable-source-tag");
   const releaseBranch = getInputRequired("release-branch");
   const buildCommand = (0, import_core.getMultilineInput)("build-command", { required: true });
   const directory = getInputRequired("directory");
@@ -11263,7 +11265,7 @@ var getInputRequired = (name) => (0, import_core.getInput)(name, {
   });
   const repository = (await octokit.repos.get({ ...import_github.context.repo })).data;
   const runInDist = { cwd: (0, import_node_path.resolve)((0, import_node_process.cwd)(), directory) };
-  await (0, import_core.group)("Initialising release branch", async () => {
+  await (0, import_core.group)("Initialising Git", async () => {
     await (0, import_exec.exec)("git", [
       "config",
       "--global",
@@ -11285,6 +11287,16 @@ var getInputRequired = (name) => (0, import_core.getInput)(name, {
       `url.${gitUrl.toString()}.insteadOf`,
       repository.clone_url
     ]);
+  });
+  await (0, import_core.group)("Creating source tag", async () => {
+    if (disableSourceTag) {
+      console.log("Disabled, skipping.");
+    } else {
+      await (0, import_exec.exec)("git", ["tag", `${version2}-src`], runInDist);
+      await (0, import_exec.exec)("git", ["push", "--tags"]);
+    }
+  });
+  await (0, import_core.group)("Initialising release branch", async () => {
     await (0, import_promises.mkdir)(directory, {
       recursive: true
     });
@@ -11317,18 +11329,23 @@ var getInputRequired = (name) => (0, import_core.getInput)(name, {
     const latestRelease = await octokit.repos.getLatestRelease({
       ...import_github.context.repo
     });
-    const releaseNotes = await octokit.repos.generateReleaseNotes({
-      ...import_github.context.repo,
-      tag_name: version2,
-      target_commitish: import_github.context.sha,
-      previous_tag_name: latestRelease.data.tag_name
-    });
+    let body = null;
+    if (!disableSourceTag) {
+      const releaseNotes = await octokit.repos.generateReleaseNotes({
+        ...import_github.context.repo,
+        tag_name: version2,
+        target_commitish: import_github.context.sha,
+        previous_tag_name: `${latestRelease.data.tag_name}-src`
+      });
+      body = releaseNotes.data.body;
+    }
     await octokit.repos.createRelease({
       ...import_github.context.repo,
       name: version2,
       tag_name: version2,
       target_commitish: releaseBranch,
-      body: releaseNotes.data.body
+      prerelease: preRelease,
+      body
     });
   });
 })().then().catch((e) => {
