@@ -11,6 +11,10 @@ inputs:
   version:
     required: true
     description: Version name of the new release.
+  pre-release:
+    required: true
+    description: Create a pre-release instead.
+    default: 'false'
   release-branch:
     required: true
     description: Branch name to place built artifacts on.
