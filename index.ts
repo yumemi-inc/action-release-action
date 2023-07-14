@@ -4,6 +4,7 @@ import { cwd, exit } from 'node:process';
 
 import {
   error,
+  getBooleanInput,
   getInput,
   getMultilineInput,
   group,
@@ -20,6 +21,7 @@ const getInputRequired = (name: string) =>
 
 (async () => {
   const version = getInputRequired('version');
+  const preRelease = getBooleanInput('pre-release');
   const releaseBranch = getInputRequired('release-branch');
   const buildCommand = getMultilineInput('build-command', { required: true });
   const directory = getInputRequired('directory');
@@ -123,6 +125,7 @@ const getInputRequired = (name: string) =>
       name: version,
       tag_name: version,
       target_commitish: releaseBranch,
+      prerelease: preRelease,
       body: releaseNotes.data.body,
     });
   });

@@ -7,6 +7,10 @@ on:
         type: string
         description: 'Version name of the new release.'
         required: true
+    pre-release:
+      version:
+        type: boolean
+        description: 'Pre-release'
 
 jobs:
   new:
@@ -26,3 +30,4 @@ jobs:
       - uses: yumemi-inc/action-release-action@v1
         with:
           version: '${{ inputs.version }}'
+          pre-release: '${{ inputs.pre-release }}'
