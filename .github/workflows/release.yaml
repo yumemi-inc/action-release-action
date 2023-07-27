@@ -30,4 +30,4 @@ jobs:
       - uses: yumemi-inc/action-release-action@v2
         with:
           version: '${{ inputs.version }}'
-          pre-release: '${{ inputs.pre-release }}'
+          pre-release: '${{ inputs.pre-release || false }}'
