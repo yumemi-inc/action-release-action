@@ -80,7 +80,7 @@ const getInputRequired = (name: string) =>
     if (disableSourceTag) {
       console.log('Disabled, skipping.');
     } else {
-      await exec('git', ['tag', `${version}-src`], runInDist);
+      await exec('git', ['tag', `${version}-src`]);
       await exec('git', ['push', '--tags']);
     }
   });
