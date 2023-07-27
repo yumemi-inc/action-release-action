@@ -27,7 +27,7 @@ jobs:
 
       - run: corepack enable pnpm
 
-      - uses: yumemi-inc/action-release-action@v2
+      - uses: yumemi-inc/action-release-action@main
         with:
           version: '${{ inputs.version }}'
           pre-release: '${{ inputs.pre-release || false }}'
