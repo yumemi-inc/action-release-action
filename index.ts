@@ -121,9 +121,12 @@ const getInputRequired = (name: string) =>
   });
 
   await group('Creating a release', async () => {
-    const latestRelease = await octokit.repos.getLatestRelease({
-      ...context.repo,
-    });
+    let latestRelease = null;
+    try {
+      latestRelease = await octokit.repos.getLatestRelease({
+        ...context.repo,
+      });
+    } catch {} // do nothing
 
     let body = null;
     if (!disableSourceTag) {
@@ -131,7 +134,9 @@ const getInputRequired = (name: string) =>
         ...context.repo,
         tag_name: version,
         target_commitish: context.sha,
-        previous_tag_name: `${latestRelease.data.tag_name}-src`,
+        previous_tag_name: latestRelease
+          ? `${latestRelease.data.tag_name}-src`
+          : undefined,
       });
 
       body = releaseNotes.data.body;
