@@ -13,6 +13,7 @@ import {
 import { exec } from '@actions/exec';
 import { context } from '@actions/github';
 import { Octokit } from '@octokit/rest';
+import fetch from 'node-fetch';
 
 const getInputRequired = (name: string) =>
   getInput(name, {
@@ -44,6 +45,7 @@ const getInputRequired = (name: string) =>
   const octokit = new Octokit({
     baseUrl: context.apiUrl,
     auth: token,
+    request: fetch,
   });
 
   const repository = (await octokit.repos.get({ ...context.repo })).data;
