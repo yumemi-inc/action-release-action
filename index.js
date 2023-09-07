@@ -18269,7 +18269,7 @@ var getInputRequired = (name) => (0, import_core.getInput)(name, {
     if (!disableSourceTag) {
       const releaseNotes = await octokit.repos.generateReleaseNotes({
         ...import_github.context.repo,
-        tag_name: version2,
+        tag_name: `${version2}-src`,
         target_commitish: import_github.context.sha,
         previous_tag_name: latestRelease ? `${latestRelease.data.tag_name}-src` : void 0
       });
