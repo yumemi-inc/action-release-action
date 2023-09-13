@@ -10,7 +10,7 @@ import {
   group,
   setFailed,
 } from '@actions/core';
-import { exec } from '@actions/exec';
+import { exec, getExecOutput } from '@actions/exec';
 import { context } from '@actions/github';
 import { Octokit } from '@octokit/rest';
 import fetch from 'node-fetch';
@@ -117,9 +117,23 @@ const getInputRequired = (name: string) =>
   await group('Committing changes', async () => {
     await exec('git', ['add', '.'], runInDist);
     await exec('git', ['commit', '-m', `feat: Release ${version}`], runInDist);
-    await exec('git', ['tag', '-f', `v${versionInfo.major}`], runInDist);
     await exec('git', ['push', '-u', 'origin', releaseBranch], runInDist);
-    await exec('git', ['push', '--tags', '-f'], runInDist);
+  });
+
+  await group('Updating the tag for major version', async () => {
+    const { stdout: sha } = await getExecOutput(
+      'git',
+      ['prev-parse', 'HEAD'],
+      runInDist,
+    );
+
+    await octokit.git.createTag({
+      ...context.repo,
+      tag: `v${versionInfo.major}`,
+      message: `Tracking v${versionInfo.major} releases`,
+      object: sha,
+      type: 'commit',
+    });
   });
 
   await group('Creating a release', async () => {
